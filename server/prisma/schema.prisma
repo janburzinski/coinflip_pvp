@@ -14,7 +14,36 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                  Int      @id @default(autoincrement())
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  googleId            String   @unique
+  email               String?
+  profilePicture      String?
+  username            String
+  totalXP             Int      @default(0)
+  currentWinStreak    Int      @default(0)
+  currentLosingStreak Int      @default(0)
+
+  gamesAsWinner Game[] @relation("Winner")
+  gamesAsLoser  Game[] @relation("Loser")
+}
+
+model Game {
+  id           Int      @id @default(autoincrement())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  hasConcluded Boolean  @default(false)
+
+  againstPC Boolean //only count real wins for the leaderboard
+  whatWon   String? //head or tails
+
+  xpGained Int? @default(0)
+  xpLost   Int? @default(0)
+
+  winner   User? @relation("Winner", fields: [winnerId], references: [id])
+  winnerId Int?
+
+  loser   User? @relation("Loser", fields: [loserId], references: [id])
+  loserId Int?
 }
